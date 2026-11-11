@@ -103,15 +103,15 @@ ApplicationWindow {
         }
         if (target && target.isOutput !== connSrcIsOutput) {
             var sN, sP, dN, dP, sLeft, dLeft
-//            console.log("----------START PORT----------")
-//            console.log("start-left ->" , isLeft, "start-order->", connSrcPort)
-//            console.log("start-prt.out " ,connSrcIsOutput)
-//            console.log("----------Finder PORT----------")
-//            console.log("target-left ->" , target.isLeft, " target-order->", target.portIndex)
-//            console.log("target-prt.out " ,target.isOutput)
-//            console.log("-------------------------------")
+            //            console.log("----------START PORT----------")
+            //            console.log("start-left ->" , isLeft, "start-order->", connSrcPort)
+            //            console.log("start-prt.out " ,connSrcIsOutput)
+            //            console.log("----------Finder PORT----------")
+            //            console.log("target-left ->" , target.isLeft, " target-order->", target.portIndex)
+            //            console.log("target-prt.out " ,target.isOutput)
+            //            console.log("-------------------------------")
             if (connSrcIsOutput) {
-//            if (!isLeft) {
+                //            if (!isLeft) {
                 sN = connSrcNode; sP = connSrcPort ; sLeft = isLeft
                 dN = target.nodeId; dP = target.portIndex ; dLeft = target.isLeft
             } else {
@@ -141,13 +141,13 @@ ApplicationWindow {
         //        revision++
     }
 
-    function isPortConnected(nodeId, isOutput, portIndex, _rev) {
+    function isPortConnected(nodeId, isOutput, portIndex, isLeft, _rev) {
         for (var i = 0; i < connectionsModel.count; i++) {
             var c = connectionsModel.get(i)
             if (isOutput) {
-                if (c.srcNode === nodeId && c.srcPort === portIndex) return true
+                if (c.srcNode === nodeId && c.srcPort === portIndex && c.srcLeft === isLeft) return true
             } else {
-                if (c.dstNode === nodeId && c.dstPort === portIndex) return true
+                if (c.dstNode === nodeId && c.dstPort === portIndex && c.dstLeft === isLeft) return true
             }
         }
         return false
@@ -220,17 +220,19 @@ ApplicationWindow {
                     }
                 }
 
+
+
                 MouseArea {
                     id: connMouse
                     anchors.fill: closeX
                     hoverEnabled: true
                     acceptedButtons: Qt.NoButton
+                    onClicked: { console.log("IN SHAPE") }
                 }
-
                 Rectangle {
-                anchors.fill: closeX
-                color: "#55ff6b6b"
-                radius: closeX.radius
+                    anchors.fill: closeX
+                    color: "#55ff6b6b"
+                    radius: closeX.radius
                 }
 
                 Rectangle {
@@ -253,7 +255,10 @@ ApplicationWindow {
                     MouseArea {
                         anchors.fill: closeX
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: removeConnectionAt(connItem.cIndex)
+                        onClicked: {
+                            removeConnectionAt(connItem.cIndex)
+                            onClicked: { console.log("IN SHAPE") }
+                        }
                     }
                 }
             }
@@ -310,7 +315,7 @@ ApplicationWindow {
                 readonly property string nodeTitle:   title
                 readonly property var ports: arrayPorts
                 opacity: headerDrag.drag.active ? 0.7 : 1
-//                opacity: 0.3
+                //                opacity: 0.3
 
                 Component.onCompleted: {
                     console.log("NODE", index, "title:", title)
@@ -321,7 +326,7 @@ ApplicationWindow {
                     console.log("  height:", height)
                     for(var i = 0; i < ports.count ; i++)
                     {
-                    console.log(ports.get(i).out,ports.get(i).pleft,ports.get(i).portName)
+                        console.log(ports.get(i).out,ports.get(i).pleft,ports.get(i).portName)
                     }
                 }
 
@@ -382,8 +387,8 @@ ApplicationWindow {
 
                     drag.target: nodeItem
                     drag.axis: Drag.XAndYAxis
-//                    drag.minimumX: 0
-//                    drag.minimumY: 0
+                    //                    drag.minimumX: 0
+                    //                    drag.minimumY: 0
 
                     onPositionChanged: {
                         if (drag.active) {
@@ -402,7 +407,7 @@ ApplicationWindow {
                         portIndex: index
                         portOut: portData.out
                         positionLeft: portData.pleft
-                        connected: isPortConnected(nodeItem.nodeId, portOut, portData.order, revision)
+                        connected: isPortConnected(nodeItem.nodeId, portOut, portData.order, positionLeft, revision)
                         portArea.color: portMAin.containsMouse ? "#88ddff" : (connected ? "#4a9eec" : "#666680")
                         width:  window.nodeWidth / 2
                         height: portSize
@@ -527,13 +532,13 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-//        addNode(100, 100, "ARINC",    4, 1)
-//        addNode(500, 150, "Transform", 2, 1)
+        //        addNode(100, 100, "ARINC",    4, 1)
+        //        addNode(500, 150, "Transform", 2, 1)
         devArinc()
-//        addNode(950, 300, "Sink",      1, 0)
+        //        addNode(950, 300, "Sink",      1, 0)
 
-//        connectionsModel.append({ srcNode: 0, srcPort: 0, dstNode: 1, dstPort: 0 })
-//        connectionsModel.append({ srcNode: 1, srcPort: 0, dstNode: 2, dstPort: 0 })
+        //        connectionsModel.append({ srcNode: 0, srcPort: 0, dstNode: 1, dstPort: 0 })
+        //        connectionsModel.append({ srcNode: 1, srcPort: 0, dstNode: 2, dstPort: 0 })
         //        revision++
     }
 }
